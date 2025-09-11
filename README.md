@@ -53,7 +53,19 @@ Edit your VS Code `settings.json` to customize the extension:
     "provider": "OKX",
     "template": "{symbol} {price} {percent}"
   }
-]
+],
+
+// API keys for providers (optional, improves rate limits)
+"crypto-price-ticker.providers": {
+  "binance": {
+    "apiKey": "",
+    "secretKey": ""
+  },
+  "okx": {
+    "apiKey": "",
+    "secretKey": ""
+  }
+}
 ```
 
 ### Template Tags
@@ -92,7 +104,17 @@ Customize how each ticker appears in the status bar using these tags:
     "provider": "OKX",
     "template": "{symbol}: {price} ({percent})"
   }
-]
+],
+"crypto-price-ticker.providers": {
+  "binance": {
+    "apiKey": "your-binance-api-key",
+    "secretKey": "your-binance-secret-key"
+  },
+  "okx": {
+    "apiKey": "your-okx-api-key",
+    "secretKey": "your-okx-secret-key"
+  }
+}
 ```
 
 ## Supported Crypto Data Providers
@@ -107,7 +129,7 @@ Customize how each ticker appears in the status bar using these tags:
 > - **Binance**: [API rate limits](https://binance-docs.github.io/apidocs/spot/en/#limits) apply per IP and endpoint.
 > - **OKX**: [API rate limits](https://www.okx.com/docs-v5/en/#rest-api-rate-limit) also apply per IP and endpoint.
 >
-> **Recommendation:** Use a refresh interval of 60 seconds or higher and limit the number of tracked tickers for best results.
+> **Recommendation:** Use a refresh interval of 60 seconds or higher and limit the number of tracked tickers for best results. Providing API keys (optional) can help increase your rate limits and access more data.
 
 ## Screenshot
 

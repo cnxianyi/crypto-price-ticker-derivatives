@@ -1,5 +1,6 @@
 import { BaseTickerProvider } from './tickerProvider';
 import got from 'got';
+import { ApiClientError } from './errors';
 
 export interface OKXTicker {
   price: number;
@@ -19,19 +20,53 @@ export interface OKXTickerData {
 }
 
 export class OKXTickerProvider extends BaseTickerProvider {
+  constructor(apiKey?: string, secretKey?: string) {
+    super(apiKey, secretKey, 'OKX');
+  }
+
   async getTickers(): Promise<OKXTickerData[]> {
     try {
       const url = 'https://www.okx.com/api/v5/market/tickers?instType=SPOT';
-      const response = await got(url);
-      const data: { code: string; data: OKXTickerData[] } = JSON.parse(response.body);
+      const options: any = {
+        headers: {}
+      };
+
+      if (this.apiKey) {
+        options.headers['OK-ACCESS-KEY'] = this.apiKey;
+        console.log('OKX: Using API key to increase rate limit');
+      }
+
+      const response = await got(url, options);
+      const data: { code: string; data: OKXTickerData[]; msg?: string } = JSON.parse(response.body);
 
       if (data.code !== '0') {
-        throw new Error('Could not retrieve tickers from OKX');
+        throw new ApiClientError(`OKX API Error [${data.code}]: ${data.msg || 'Unknown error'}`, parseInt(data.code));
       }
+
+      console.log(`OKX: Successfully retrieved ${data.data.length} tickers`);
       return data.data;
     } catch (error: any) {
-      console.error(error.message);
-      throw new Error('Could not retrieve tickers from OKX');
+      console.error('OKX: Error retrieving tickers:', error.message);
+
+      // If API key fails, try fallback to public API
+      if (this.apiKey && !(error instanceof ApiClientError)) {
+        console.warn('OKX: Retrying with public API...');
+        try {
+          const response = await got('https://www.okx.com/api/v5/market/tickers?instType=SPOT');
+          const data: { code: string; data: OKXTickerData[]; msg?: string } = JSON.parse(response.body);
+
+          if (data.code !== '0') {
+            throw new ApiClientError(`OKX API Error [${data.code}]: ${data.msg || 'Unknown error'}`, parseInt(data.code));
+          }
+
+          console.log(`OKX: Successfully retrieved ${data.data.length} tickers (public API)`);
+          return data.data;
+        } catch (fallbackError: any) {
+          console.error('OKX: Even public API failed:', fallbackError.message);
+        }
+      }
+
+      throw new Error(`Could not retrieve tickers from OKX: ${error.message}`);
     }
   }
 
@@ -39,7 +74,7 @@ export class OKXTickerProvider extends BaseTickerProvider {
     const tickerData = allTickers.find(ticker => ticker.instId === `${symbol}-${currency.toUpperCase()}`);
 
     if (!tickerData) {
-      throw new Error(`Could not retrieve price for ${symbol}`);
+      throw new Error(`Could not retrieve price for ${symbol} from OKX`);
     }
 
     const last = parseFloat(tickerData.last);
@@ -55,5 +90,32 @@ export class OKXTickerProvider extends BaseTickerProvider {
       change: parseFloat(change.toFixed(2)),
       percent: percent
     };
+  }
+
+  protected isApiError(data: any): boolean {
+    // OKX API errors have 'code' field that's not '0'
+    return data && data.code && data.code !== '0';
+  }
+
+  protected handleApiError(data: any, retries: number): void {
+    const code = data.code;
+    const message = data.msg || 'Unknown OKX API error';
+
+    console.error(`OKX API Error [${code}]: ${message}`);
+
+    switch (code) {
+      case '50004':
+        throw new ApiClientError(`OKX: Invalid API key - ${message}`, 401);
+      case '50005':
+        throw new ApiClientError(`OKX: Invalid secret key - ${message}`, 401);
+      case '50006':
+        throw new ApiClientError(`OKX: Too many requests - ${message}`, 429);
+      case '50011':
+        throw new ApiClientError(`OKX: Invalid timestamp - ${message}`, 400);
+      case '50013':
+        throw new ApiClientError(`OKX: Invalid request - ${message}`, 400);
+      default:
+        throw new ApiClientError(`OKX: API error [${code}] - ${message}`, 500);
+    }
   }
 }

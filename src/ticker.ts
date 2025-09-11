@@ -37,10 +37,10 @@ export class Tickers {
       let tickerProvider: TickerProvider;
       switch (ticker.provider) {
         case 'Binance':
-          tickerProvider = new BinanceTickerProvider();
+          tickerProvider = new BinanceTickerProvider(configuration.providers?.binance?.apiKey, configuration.providers?.binance?.secretKey);
           break;
         case 'OKX':
-          tickerProvider = new OKXTickerProvider();
+          tickerProvider = new OKXTickerProvider(configuration.providers?.okx?.apiKey, configuration.providers?.okx?.secretKey);
           break;
         default:
           throw new Error(`Unknown ticker provider: ${ticker.provider}`);
@@ -102,17 +102,30 @@ export class Tickers {
             // make sure the status bar item is visible
             item.show();
           } catch (error: any) {
-            console.error(error.message);
-            Object.values(this.items).forEach(item => {
-              item.hide();
-            });
+            console.error(`Error refreshing ${ticker.symbol} from ${ticker.provider}:`, error.message);
+            const item = this.items[ticker.symbol];
+
+            // Display error message on status bar
+            if (error.name === 'AuthError') {
+              item.text = `${ticker.symbol}: API Key error`;
+              item.color = 'red';
+            } else if (error.name === 'NetworkError') {
+              item.text = `${ticker.symbol}: Network error`;
+              item.color = 'orange';
+            } else {
+              item.text = `${ticker.symbol}: Error`;
+              item.color = 'red';
+            }
+            item.show();
           }
         }
-      } catch (error) {
-        // log the error and hide the status bar item
-        console.log(error.message);
+      } catch (error: any) {
+        console.error('Error refreshing all tickers:', error.message);
+        // Display error message on all items
         Object.values(this.items).forEach(item => {
-          item.hide();
+          item.text = 'Connection error';
+          item.color = 'red';
+          item.show();
         });
       }
     })();
@@ -130,7 +143,8 @@ export class Tickers {
         }
       }
     } catch (error: any) {
-      console.error('Could not retrieve all tokens:', error.message);
+      console.error('Error retrieving all tokens:', error.message);
+      // Don't throw error to avoid stopping entire refresh
     }
   }
 }
