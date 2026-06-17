@@ -8,7 +8,7 @@
     "price",
     "crypto"
   ],
-  "version": "1.2.1",
+  "version": "1.2.2",
   "publisher": "cnxianyi",
   "repository": {
     "type": "git",
@@ -44,15 +44,10 @@
           "default": false,
           "description": "Disable refreshing when the vscode window does not have focus."
         },
-        "crypto-price-ticker-derivatives.higherColor": {
+        "crypto-price-ticker-derivatives.color": {
           "type": "string",
-          "default": "lightgreen",
-          "description": "The color that indicates the symbols is trading higher."
-        },
-        "crypto-price-ticker-derivatives.lowerColor": {
-          "type": "string",
-          "default": "coral",
-          "description": "The color that indicates the symbols is trading lower."
+          "default": "",
+          "description": "The status bar text color. Leave empty to use the default VS Code status bar color."
         },
         "crypto-price-ticker-derivatives.tickers": {
           "type": "array",

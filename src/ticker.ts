@@ -16,23 +16,22 @@ export interface Ticker {
 
 export class Tickers {
   // the tickers status bar item
-  private items: { [key: string]: vscode.StatusBarItem } = {};
+  private item: vscode.StatusBarItem;
 
   private tickers: Ticker[];
   private tickerProviders: TickerProvider[] = [];
   private allTokens: { [key: string]: any[] } = {};
   private lastSuccessfulTokens: { [key: string]: any[] } = {}; // Cache for fallback
   private isRefreshing = false;
-  private higherColor: string;
-  private lowerColor: string;
+  private color: string | undefined;
 
   // construct a new ticker based on a ticker definition
   constructor(tickers: Ticker[]) {
     this.tickers = tickers;
+    this.item = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, 0);
 
     const configuration: any = vscode.workspace.getConfiguration().get('crypto-price-ticker-derivatives');
-    this.higherColor = configuration.higherColor || 'lightgreen';
-    this.lowerColor = configuration.lowerColor || 'coral';
+    this.color = typeof configuration.color === 'string' && configuration.color.trim() !== '' ? configuration.color : undefined;
 
     // Get unique providers that are actually used
     const usedProviders = [...new Set(this.tickers.map(ticker => ticker.provider))];
@@ -50,26 +49,14 @@ export class Tickers {
       this.tickerProviders.push(tickerProvider);
     });
 
-    // create status bar items for each configured ticker
-    this.tickers.forEach((ticker, priority) => {
-      this.items[this.getItemKey(ticker, priority)] = vscode.window.createStatusBarItem(vscode.StatusBarAlignment.Left, priority);
-    });
-
     // handle the first refresh call
     this.refresh();
   }
 
   // dispose of the ticker
   dispose() {
-    // hide and dispose the status bar item
-    Object.values(this.items).forEach(item => {
-      item.hide();
-      item.dispose();
-    });
-  }
-
-  private getItemKey(ticker: Ticker, index: number): string {
-    return `${ticker.provider}:${ticker.symbol}:${ticker.currency}:${index}`;
+    this.item.hide();
+    this.item.dispose();
   }
 
   private formatTickerText(ticker: Ticker, tickerData: any): string {
@@ -102,7 +89,9 @@ export class Tickers {
 
     try {
       await this.getAllTokens();
-      for (const [index, ticker] of this.tickers.entries()) {
+      const texts: string[] = [];
+
+      for (const ticker of this.tickers) {
         try {
           const tickerProvider = this.tickerProviders.find(
             provider =>
@@ -120,40 +109,30 @@ export class Tickers {
           }
 
           const tickerData = await tickerProvider.getTicker(ticker.symbol, ticker.currency, allTokensForProvider);
-          const item = this.items[this.getItemKey(ticker, index)];
 
-          // set the status bar item text using the template
-          item.text = this.formatTickerText(ticker, tickerData);
-          // set the status bar item colour based on the percent change
-          item.color = tickerData.percent < 0 ? this.lowerColor : this.higherColor;
-          // make sure the status bar item is visible
-          item.show();
+          texts.push(this.formatTickerText(ticker, tickerData));
         } catch (error: any) {
           console.error(`Error refreshing ${ticker.symbol} from ${ticker.provider}:`, error.message);
-          const item = this.items[this.getItemKey(ticker, index)];
 
           // Display error message on status bar
           if (error.name === 'AuthError') {
-            item.text = `${ticker.symbol}: API Key error`;
-            item.color = 'red';
+            texts.push(`${ticker.symbol}: API Key error`);
           } else if (error.name === 'NetworkError') {
-            item.text = `${ticker.symbol}: Network error`;
-            item.color = 'orange';
+            texts.push(`${ticker.symbol}: Network error`);
           } else {
-            item.text = `${ticker.symbol}: Error`;
-            item.color = 'red';
+            texts.push(`${ticker.symbol}: Error`);
           }
-          item.show();
         }
       }
+
+      this.item.text = texts.join('  ');
+      this.item.color = this.color;
+      this.item.show();
     } catch (error: any) {
       console.error('Error refreshing all tickers:', error.message);
-      // Display error message on all items
-      Object.values(this.items).forEach(item => {
-        item.text = 'Connection error';
-        item.color = 'red';
-        item.show();
-      });
+      this.item.text = 'Connection error';
+      this.item.color = this.color;
+      this.item.show();
     } finally {
       this.isRefreshing = false;
     }

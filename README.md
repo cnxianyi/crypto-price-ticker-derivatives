@@ -6,7 +6,7 @@ Monitor real-time cryptocurrency derivatives prices directly in your Visual Stud
 
 - **Live Crypto Prices**: View up-to-date prices for your favorite cryptocurrencies such as BTC, ETH, and more.
 - **Binance Futures Provider**: Fetch data from Binance USD-M Futures.
-- **Customizable Tickers**: Choose coins, quote currencies, colors, and display templates.
+- **Customizable Tickers**: Choose coins, quote currencies, text color, and display templates.
 - **Track Multiple Coins**: Add as many tickers as you want.
 - **Auto Refresh**: Set your own refresh interval or update only when VS Code is focused.
 - **Lightweight & Fast**: Minimal impact on your workflow and system resources.
@@ -33,11 +33,8 @@ Edit your VS Code `settings.json` to customize the extension:
 // Only refresh when VSCode window is focused (true/false)
 "crypto-price-ticker-derivatives.onlyRefreshWhenFocused": false,
 
-// Color when price increases
-"crypto-price-ticker-derivatives.higherColor": "lightgreen",
-
-// Color when price decreases
-"crypto-price-ticker-derivatives.lowerColor": "coral",
+// Status bar text color. Leave empty to use the default VS Code color.
+"crypto-price-ticker-derivatives.color": "",
 
 // Array of ticker definitions
 "crypto-price-ticker-derivatives.tickers": [
