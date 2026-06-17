@@ -1,11 +1,11 @@
 # Crypto Price Ticker for VS Code
 
-Monitor real-time cryptocurrency prices directly in your Visual Studio Code status bar. Stay updated with the latest prices for Bitcoin, Ethereum, and any other supported coins from Binance while you code.
+Monitor real-time cryptocurrency derivatives prices directly in your Visual Studio Code status bar. Stay updated with the latest Binance USD-M Futures prices for Bitcoin, Ethereum, and any other supported coins while you code.
 
 ## Key Features
 
 - **Live Crypto Prices**: View up-to-date prices for your favorite cryptocurrencies such as BTC, ETH, and more.
-- **Binance Provider**: Fetch data from Binance.
+- **Binance Futures Provider**: Fetch data from Binance USD-M Futures.
 - **Customizable Tickers**: Choose coins, quote currencies, colors, and display templates.
 - **Track Multiple Coins**: Add as many tickers as you want.
 - **Auto Refresh**: Set your own refresh interval or update only when VS Code is focused.
@@ -111,13 +111,13 @@ Customize how each ticker appears in the status bar using these tags:
 
 ## Supported Crypto Data Provider
 
-- **Binance** - [binance.com](https://binance.com)
+- **Binance USD-M Futures** - [binance.com](https://binance.com)
 
 ## API Rate Limits
 
-> **Important:** Binance enforces API rate limits. Setting a very low refresh interval or tracking too many tickers may result in temporary bans or incomplete data.
+> **Important:** Binance Futures enforces API rate limits. Setting a very low refresh interval or tracking too many tickers may result in temporary bans or incomplete data.
 >
-> - **Binance**: [API rate limits](https://binance-docs.github.io/apidocs/spot/en/#limits) apply per IP and endpoint.
+> - **Binance Futures**: [API rate limits](https://developers.binance.com/docs/derivatives/usds-margined-futures/market-data/rest-api/24hr-Ticker-Price-Change-Statistics) apply per IP and endpoint.
 >
 > **Recommendation:** Use a refresh interval of 60 seconds or higher and limit the number of tracked tickers for best results. Providing API keys (optional) can help increase your rate limits and access more data.
 
