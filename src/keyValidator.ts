@@ -1,8 +1,6 @@
 // Copyright (c) Mavis2103. Licensed under the MIT license.
 // See LICENSE file in the project root for full license information.
 
-import { ValidationError } from './errors';
-
 export interface ProviderConfig {
   apiKey?: string;
   secretKey?: string;
@@ -55,8 +53,6 @@ export class KeyValidator {
     switch (providerName.toLowerCase()) {
       case 'binance':
         return this.validateBinanceKeys(config);
-      case 'okx':
-        return this.validateOKXKeys(config);
       default:
         return { isValid: true };
     }
@@ -77,25 +73,6 @@ export class KeyValidator {
       return {
         isValid: false,
         message: 'Binance: Secret Key must be 64 characters.'
-      };
-    }
-
-    return { isValid: true };
-  }
-
-  private validateOKXKeys(config: ProviderConfig): ValidationResult {
-    // OKX API keys may have different format, basic validation
-    if (config.apiKey!.length < 32) {
-      return {
-        isValid: false,
-        message: 'OKX: API Key too short (minimum 32 characters).'
-      };
-    }
-
-    if (config.secretKey!.length < 32) {
-      return {
-        isValid: false,
-        message: 'OKX: Secret Key too short (minimum 32 characters).'
       };
     }
 

@@ -4,7 +4,6 @@
 import * as vscode from 'vscode';
 import { TickerProvider } from './providers';
 import { BinanceTickerProvider } from './providers/binance';
-import { OKXTickerProvider } from './providers/okx';
 
 // represents a ticker object
 export interface Ticker {
@@ -44,9 +43,6 @@ export class Tickers {
       switch (providerName) {
         case 'Binance':
           tickerProvider = new BinanceTickerProvider(configuration.providers?.binance?.apiKey, configuration.providers?.binance?.secretKey);
-          break;
-        case 'OKX':
-          tickerProvider = new OKXTickerProvider(configuration.providers?.okx?.apiKey, configuration.providers?.okx?.secretKey);
           break;
         default:
           throw new Error(`Unknown ticker provider: ${providerName}`);
@@ -110,8 +106,7 @@ export class Tickers {
         try {
           const tickerProvider = this.tickerProviders.find(
             provider =>
-              (provider instanceof BinanceTickerProvider && ticker.provider === 'Binance') ||
-              (provider instanceof OKXTickerProvider && ticker.provider === 'OKX')
+              provider instanceof BinanceTickerProvider && ticker.provider === 'Binance'
           );
           if (!tickerProvider) {
             continue;
@@ -175,14 +170,9 @@ export class Tickers {
           this.allTokens['Binance'] = binanceTickers;
           this.lastSuccessfulTokens['Binance'] = binanceTickers; // Cache successful data
           console.log('Binance: Successfully updated token data');
-        } else if (tickerProvider instanceof OKXTickerProvider && usedProviders.includes('OKX')) {
-          const okxTickers = await tickerProvider.getTickers();
-          this.allTokens['OKX'] = okxTickers;
-          this.lastSuccessfulTokens['OKX'] = okxTickers; // Cache successful data
-          console.log('OKX: Successfully updated token data');
         }
       } catch (error: any) {
-        const providerName = tickerProvider instanceof BinanceTickerProvider ? 'Binance' : 'OKX';
+        const providerName = 'Binance';
         console.error(`Error retrieving tokens from ${providerName}:`, error.message);
 
         // Use cached data if available, otherwise keep current data

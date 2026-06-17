@@ -81,8 +81,7 @@
                 "type": "string",
                 "default": "Binance",
                 "enum": [
-                  "Binance",
-                  "OKX"
+                  "Binance"
                 ],
                 "description": "The provider to use to get the price."
               }
@@ -127,39 +126,15 @@
                 "secretKey": ""
               },
               "description": "Configuration for Binance provider."
-            },
-            "okx": {
-              "type": "object",
-              "properties": {
-                "apiKey": {
-                  "type": "string",
-                  "default": "",
-                  "description": "API key for OKX provider."
-                },
-                "secretKey": {
-                  "type": "string",
-                  "default": "",
-                  "description": "Secret key for OKX provider."
-                }
-              },
-              "default": {
-                "apiKey": "",
-                "secretKey": ""
-              },
-              "description": "Configuration for OKX provider."
             }
           },
           "default": {
             "binance": {
               "apiKey": "",
               "secretKey": ""
-            },
-            "okx": {
-              "apiKey": "",
-              "secretKey": ""
             }
           },
-          "description": "API keys configuration for providers."
+          "description": "API keys configuration for Binance provider."
         }
       }
     }

@@ -40,7 +40,7 @@ function constructor() {
     currency: definition.currency || 'USDT',
     exchange: definition.exchange,
     template: definition.template || '{symbol} {price}',
-    provider: ['Binance', 'OKX'].includes(definition.provider) ? definition.provider : 'Binance'
+    provider: definition.provider === 'Binance' ? definition.provider : 'Binance'
   }));
 
   // create a new ticker

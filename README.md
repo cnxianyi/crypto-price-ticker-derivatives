@@ -1,12 +1,12 @@
 # Crypto Price Ticker for VS Code
 
-Monitor real-time cryptocurrency prices directly in your Visual Studio Code status bar. Stay updated with the latest prices for Bitcoin, Ethereum, and any other supported coins from Binance and OKX exchanges while you code.
+Monitor real-time cryptocurrency prices directly in your Visual Studio Code status bar. Stay updated with the latest prices for Bitcoin, Ethereum, and any other supported coins from Binance while you code.
 
 ## Key Features
 
 - **Live Crypto Prices**: View up-to-date prices for your favorite cryptocurrencies such as BTC, ETH, and more.
-- **Multiple Providers Supported**: Fetch data from top exchanges: **Binance** and **OKX**.
-- **Customizable Tickers**: Choose coins, quote currencies, providers, colors, and display templates.
+- **Binance Provider**: Fetch data from Binance.
+- **Customizable Tickers**: Choose coins, quote currencies, colors, and display templates.
 - **Track Multiple Coins**: Add as many tickers as you want.
 - **Auto Refresh**: Set your own refresh interval or update only when VS Code is focused.
 - **Lightweight & Fast**: Minimal impact on your workflow and system resources.
@@ -50,18 +50,14 @@ Edit your VS Code `settings.json` to customize the extension:
   {
     "symbol": "ETH",
     "currency": "USDT",
-    "provider": "OKX",
+    "provider": "Binance",
     "template": "{symbol} {price} {percent}"
   }
 ],
 
-// API keys for providers (optional, improves rate limits)
+// Binance API keys (optional, improves rate limits)
 "crypto-price-ticker.providers": {
   "binance": {
-    "apiKey": "",
-    "secretKey": ""
-  },
-  "okx": {
     "apiKey": "",
     "secretKey": ""
   }
@@ -101,7 +97,7 @@ Customize how each ticker appears in the status bar using these tags:
   {
     "symbol": "ETH",
     "currency": "USDT",
-    "provider": "OKX",
+    "provider": "Binance",
     "template": "{symbol}: {price} ({percent})"
   }
 ],
@@ -109,25 +105,19 @@ Customize how each ticker appears in the status bar using these tags:
   "binance": {
     "apiKey": "your-binance-api-key",
     "secretKey": "your-binance-secret-key"
-  },
-  "okx": {
-    "apiKey": "your-okx-api-key",
-    "secretKey": "your-okx-secret-key"
   }
 }
 ```
 
-## Supported Crypto Data Providers
+## Supported Crypto Data Provider
 
-- **Binance** — [binance.com](https://binance.com)
-- **OKX** — [okx.com](https://okx.com)
+- **Binance** - [binance.com](https://binance.com)
 
 ## API Rate Limits
 
-> **Important:** Both Binance and OKX enforce API rate limits. Setting a very low refresh interval or tracking too many tickers may result in temporary bans or incomplete data.
+> **Important:** Binance enforces API rate limits. Setting a very low refresh interval or tracking too many tickers may result in temporary bans or incomplete data.
 >
 > - **Binance**: [API rate limits](https://binance-docs.github.io/apidocs/spot/en/#limits) apply per IP and endpoint.
-> - **OKX**: [API rate limits](https://www.okx.com/docs-v5/en/#rest-api-rate-limit) also apply per IP and endpoint.
 >
 > **Recommendation:** Use a refresh interval of 60 seconds or higher and limit the number of tracked tickers for best results. Providing API keys (optional) can help increase your rate limits and access more data.
 
@@ -147,4 +137,4 @@ Customize how each ticker appears in the status bar using these tags:
 
 ---
 
-**Crypto Price Ticker for VS Code** — The best way to keep track of cryptocurrency prices while coding!
+**Crypto Price Ticker for VS Code** - The best way to keep track of cryptocurrency prices while coding!
